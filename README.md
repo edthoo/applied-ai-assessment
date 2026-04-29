@@ -77,7 +77,7 @@ src/
 ├── TaskCard.tsx     # Task card component with status icon, badge, dependency info
 ├── types.ts         # Task interface and TaskStatus type
 ├── data.ts          # Initial task data (provided mock data)
-├── index.css        # Tailwind imports, custom theme, animations
+├── index.css        # Tailwind imports, custom theme
 └── main.tsx         # React entry point
 ```
 
@@ -106,12 +106,12 @@ function evaluateLocks(tasks: Task[]): Task[] {
 
 A single pass is sufficient because the cascade only transitions `locked → pending`, never `locked → completed`. No chain reaction beyond one level of unlocking per click.
 
-### Animations
+### Visual Feedback
 
-CSS-only transitions and keyframe animations — no animation libraries:
-- **Unlock**: opacity + scale transition when a task goes from locked → pending
-- **Complete**: brief scale pulse on completion
-- **Hover**: lift + glow intensification on pending cards
+Each task state has distinct visual treatment — no CSS animations, just clear static cues:
+- **Pending**: Amber glow border, hover lift + intensified glow to signal interactivity
+- **Completed**: Green accent border, checkmark icon
+- **Locked**: Dimmed at 50% opacity, lock icon, `cursor-not-allowed`
 
 ### Dependency Visibility
 
