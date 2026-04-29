@@ -76,7 +76,7 @@ I kept it flat on purpose. It's a single-page app with five tasks — spinning u
 
 ### State
 
-One `useState<Task[]>`. That's it. I considered whether this needed something heavier — Zustand, useReducer, whatever — but honestly, it's five items with a single mutation. `useState` does the job without any fuss.
+One `useState<Task[]>`. That's it. I considered whether this needed something heavier — Zustand, useReducer, but honestly, it's five items with a single mutation. `useState` does the job without any fuss.
 
 State only flows one way: `locked → pending → completed`. No going back.
 
@@ -93,7 +93,7 @@ function evaluateLocks(tasks: Task[]): Task[] {
 }
 ```
 
-One thing I thought about: does this need to loop until nothing changes? Nope. The cascade only ever flips `locked → pending`, never straight to `completed`. So there's no chain reaction — a single pass after each click is enough.
+One thing I thought about: does this need to loop until nothing changes? Nope. The cascade only ever flips `locked → pending`, never straight to `completed`. So there's no chain reaction, a single pass after each click is enough.
 
 ### Visual Cues
 
@@ -104,7 +104,7 @@ I wanted each state to be immediately obvious without reading labels:
 
 ### Showing Dependencies
 
-Locked tasks display what they're waiting on, with status indicators for each prerequisite (✓ strikethrough if it's done, dot if it's not). I think this is important — without it, you'd have to scan the whole list to figure out why something's locked.
+Locked tasks display what they're waiting on, with status indicators for each prerequisite (✓ strikethrough if it's done, dot if it's not). I think this is important without it, you'd have to scan the whole list to figure out why something's locked.
 
 ### Accessibility
 
