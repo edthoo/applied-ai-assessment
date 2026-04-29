@@ -4,7 +4,6 @@ interface TaskCardProps {
   task: Task;
   allTasks: Task[];
   onComplete: (id: string) => void;
-  animationClass?: string;
 }
 
 function StatusIcon({ status }: { status: Task['status'] }) {
@@ -81,7 +80,7 @@ function DependencyInfo({ task, allTasks }: { task: Task; allTasks: Task[] }) {
   );
 }
 
-export function TaskCard({ task, allTasks, onComplete, animationClass }: TaskCardProps) {
+export function TaskCard({ task, allTasks, onComplete }: TaskCardProps) {
   const isPending = task.status === 'pending';
   const isLocked = task.status === 'locked';
 
@@ -95,7 +94,6 @@ export function TaskCard({ task, allTasks, onComplete, animationClass }: TaskCar
         ${task.status === 'pending' ? 'card-pending cursor-pointer bg-surface-900' : ''}
         ${task.status === 'completed' ? 'card-completed bg-surface-900/70' : ''}
         ${task.status === 'locked' ? 'card-locked cursor-not-allowed bg-surface-900/40 opacity-50' : ''}
-        ${animationClass ?? ''}
       `}
       aria-label={
         isPending

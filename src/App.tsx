@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import type { Task } from './types';
 import { initialTasks } from './data';
 import { TaskCard } from './TaskCard';
@@ -14,8 +14,6 @@ function evaluateLocks(tasks: Task[]): Task[] {
 
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
-  const [animations, setAnimations] = useState<Record<string, string>>({});
-  const prevTasksRef = useRef<Task[]>(initialTasks);
 
   const completedCount = tasks.filter((t) => t.status === 'completed').length;
   const allDone = completedCount === tasks.length;
@@ -24,22 +22,7 @@ export default function App() {
   function completeTask(id: string) {
     setTasks((prev) => {
       const updated = prev.map((t) => (t.id === id ? { ...t, status: 'completed' as const } : t));
-      const evaluated = evaluateLocks(updated);
-
-      // Determine which tasks just unlocked or just completed
-      const newAnimations: Record<string, string> = {};
-      newAnimations[id] = 'animate-complete';
-      for (const task of evaluated) {
-        const prevTask = prevTasksRef.current.find((t) => t.id === task.id);
-        if (prevTask?.status === 'locked' && task.status === 'pending') {
-          newAnimations[task.id] = 'animate-unlock';
-        }
-      }
-      prevTasksRef.current = evaluated;
-      setAnimations(newAnimations);
-      setTimeout(() => setAnimations({}), 600);
-
-      return evaluated;
+      return evaluateLocks(updated);
     });
   }
 
@@ -59,7 +42,7 @@ export default function App() {
           <div className="mt-4 flex items-center gap-3">
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-800">
               <div
-                className="animate-fill h-full rounded-full bg-gradient-to-r from-accent-amber to-accent-emerald transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-accent-amber to-accent-emerald transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -77,7 +60,6 @@ export default function App() {
               task={task}
               allTasks={tasks}
               onComplete={completeTask}
-              animationClass={animations[task.id]}
             />
           ))}
         </div>
