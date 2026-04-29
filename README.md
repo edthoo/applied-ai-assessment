@@ -131,11 +131,3 @@ This gives users immediate context on what's blocking a task without scanning th
 
 Dark theme (slate-950 background) with amber accents for pending/actionable states and emerald for completed states. Typography uses [DM Sans](https://fonts.google.com/specimen/DM+Sans) for body text, [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans) for display/headings, and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) for badges and counters.
 
-## What I'd Add in Production
-
-- **Tests**: Vitest + React Testing Library for the cascade logic and component interactions
-- **Reset button**: Allow users to reset all tasks to initial state
-- **Undo**: Allow reverting the last completion (with reverse cascade)
-- **Persistence**: Save task state to localStorage
-- **Keyboard navigation**: Tab through pending tasks, Enter/Space to complete
-- **Drag-and-drop reordering**: Let users customize task display order
