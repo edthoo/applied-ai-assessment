@@ -1,24 +1,24 @@
 # Task Dependency Tracker
 
-A simplified workflow task dependency tracker built for the [Applied AI / Opus](https://applied-ai.com/) frontend assessment. Users complete tasks in sequence — locked tasks automatically unlock when their prerequisites are met.
+A workflow task dependency tracker I built for the [Applied AI / Opus](https://applied-ai.com/) frontend assessment. The idea's simple: you've got tasks, some depend on others, and you click through them in order. Locked tasks unlock automatically once their prerequisites are done.
 
 ![React](https://img.shields.io/badge/React-19-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-6-blue) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-4-blue) ![Vite](https://img.shields.io/badge/Vite-8-purple)
 
-## Demo
+## How It Works
 
-The app renders a vertical list of workflow tasks. Each task is in one of three states:
+You get a vertical list of five workflow tasks. Each one sits in one of three states:
 
-| State | Visual | Interaction |
-|-------|--------|-------------|
-| **Pending** | Amber glow, "Ready" badge | Click to complete |
-| **Completed** | Green accent, checkmark, "Done" badge | No interaction |
-| **Locked** | Dimmed, lock icon, "Locked" badge | Disabled — shows blocking dependencies |
+| State | What it looks like | What you can do |
+|-------|-------------------|-----------------|
+| **Pending** | Amber glow, "Ready" badge | Click it to mark as done |
+| **Completed** | Green accent, checkmark, "Done" badge | Nothing — it's finished |
+| **Locked** | Dimmed out, lock icon, "Locked" badge | Can't touch it yet — shows what's blocking it |
 
-### The Cascade
+### The Cascade (the interesting bit)
 
-When a task is completed, all locked tasks are re-evaluated. If every prerequisite of a locked task is now completed, it automatically transitions to **pending** (unlocked). This is the core logic of the app.
+When you complete a task, the app re-checks every locked task: "Hey, are all your prerequisites done now?" If yes, it flips to pending. That's really the core of the whole thing.
 
-**Dependency chain in the mock data:**
+Here's the dependency chain:
 
 ```
 task_1 (Extract Invoice Data) ──→ task_3 (Human Review)
@@ -26,72 +26,61 @@ task_1 (Extract Invoice Data) ──→ task_3 (Human Review)
 task_2 (Format JSON) ──────────────────────────────────/
 ```
 
-**Example flow:**
-1. Click "Extract Invoice Data" → completes, "Human Review" unlocks
-2. Click "Format JSON" → completes, nothing else unlocks yet (task_4 still needs task_3)
-3. Click "Human Review" → completes, "Sync to Salesforce" unlocks (both prereqs met)
-4. Click "Sync to Salesforce" → completes, "Send Client Email" unlocks
-5. Click "Send Client Email" → all tasks complete
+So a typical run looks like:
+1. Click "Extract Invoice Data" → done, "Human Review" unlocks
+2. Click "Format JSON" → done, but nothing else unlocks yet (task_4 still needs task_3)
+3. Click "Human Review" → done, now "Sync to Salesforce" unlocks since both its deps are met
+4. Click "Sync to Salesforce" → "Send Client Email" unlocks
+5. Click that last one → you're done 🎉
 
 ## Tech Stack
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Bun** | 1.x | Runtime & package manager |
-| **Vite** | 8 | Dev server & bundler |
+| Tool | Version | Why |
+|------|---------|-----|
+| **Bun** | 1.x | Fast runtime, nice package manager |
+| **Vite** | 8 | Dev server + bundler, basically zero config |
 | **React** | 19 | UI framework |
-| **TypeScript** | 6 | Type safety |
-| **Tailwind CSS** | 4 | Utility-first styling |
+| **TypeScript** | 6 | Keeps things honest |
+| **Tailwind CSS** | 4 | Styling without the ceremony |
 
-No component libraries (shadcn, MUI, etc.) — raw React + Tailwind only, as required.
+No component libraries — no shadcn, no MUI, nothing. Raw React + Tailwind, as the brief asked for.
 
 ## Getting Started
 
-### Prerequisites
-
-- [Bun](https://bun.sh/) v1.x or later
-
-### Install & Run
+You'll need [Bun](https://bun.sh/) v1.x or later.
 
 ```bash
-# Install dependencies
 bun install
-
-# Start dev server
 bun dev
-
-# Build for production
-bun run build
-
-# Preview production build
-bun run preview
 ```
 
-The dev server runs at `http://localhost:5173` by default.
+That's it. Dev server runs at `http://localhost:5173`.
+
+To build for production: `bun run build`. To preview the build: `bun run preview`.
 
 ## Project Structure
 
 ```
 src/
-├── App.tsx          # Main app — state management, cascade logic, layout
-├── TaskCard.tsx     # Task card component with status icon, badge, dependency info
-├── types.ts         # Task interface and TaskStatus type
-├── data.ts          # Initial task data (provided mock data)
-├── index.css        # Tailwind imports, custom theme
-└── main.tsx         # React entry point
+├── App.tsx          # State management, cascade logic, layout
+├── TaskCard.tsx     # Individual task card — icon, badge, dependency info
+├── types.ts         # Task interface and status type
+├── data.ts          # The five initial tasks
+├── index.css        # Tailwind config, custom theme
+└── main.tsx         # Entry point
 ```
 
-Intentionally flat — this is a single-page, 5-task app. No over-engineered folder structure.
+I kept it flat on purpose. It's a single-page app with five tasks — spinning up a `features/` folder with barrel exports would be silly here.
 
-## Architecture Decisions
+## Decisions I Made (and Why)
 
-### State Management
+### State
 
-A single `useState<Task[]>` holds all task state. No external state library — `useState` is sufficient for 5 tasks with one mutation (complete). State transitions are one-directional: `locked → pending → completed`.
+One `useState<Task[]>`. That's it. I considered whether this needed something heavier — Zustand, useReducer, whatever — but honestly, it's five items with a single mutation. `useState` does the job without any fuss.
 
-### Cascade Logic
+State only flows one way: `locked → pending → completed`. No going back.
 
-The `evaluateLocks` function runs after every completion:
+### The Cascade Function
 
 ```ts
 function evaluateLocks(tasks: Task[]): Task[] {
@@ -104,30 +93,23 @@ function evaluateLocks(tasks: Task[]): Task[] {
 }
 ```
 
-A single pass is sufficient because the cascade only transitions `locked → pending`, never `locked → completed`. No chain reaction beyond one level of unlocking per click.
+One thing I thought about: does this need to loop until nothing changes? Nope. The cascade only ever flips `locked → pending`, never straight to `completed`. So there's no chain reaction — a single pass after each click is enough.
 
-### Visual Feedback
+### Visual Cues
 
-Each task state has distinct visual treatment — no CSS animations, just clear static cues:
-- **Pending**: Amber glow border, hover lift + intensified glow to signal interactivity
-- **Completed**: Green accent border, checkmark icon
-- **Locked**: Dimmed at 50% opacity, lock icon, `cursor-not-allowed`
+I wanted each state to be immediately obvious without reading labels:
+- **Pending** cards have an amber glow and a hover lift — they're saying "click me"
+- **Completed** cards shift to green with a checkmark — clearly done
+- **Locked** cards are dimmed to 50% with a lock icon and `cursor-not-allowed` — don't even try
 
-### Dependency Visibility
+### Showing Dependencies
 
-Locked (and completed) tasks show their prerequisites with status indicators:
-- ✓ with strikethrough for completed prerequisites
-- Dot for still-pending prerequisites
-
-This gives users immediate context on what's blocking a task without scanning the full list.
+Locked tasks display what they're waiting on, with status indicators for each prerequisite (✓ strikethrough if it's done, dot if it's not). I think this is important — without it, you'd have to scan the whole list to figure out why something's locked.
 
 ### Accessibility
 
-- Task cards use `<button>` elements with descriptive `aria-label` attributes
-- Locked tasks are `disabled` — not just visually dimmed
-- Color is not the sole indicator of state — icons and text badges provide redundant signals
+Task cards are actual `<button>` elements with `aria-label` attributes. Locked tasks are properly `disabled`, not just styled to look that way. And I made sure colour isn't the only way to tell states apart — there are icons and text badges too.
 
 ## Design
 
-Dark theme (slate-950 background) with amber accents for pending/actionable states and emerald for completed states. Typography uses [DM Sans](https://fonts.google.com/specimen/DM+Sans) for body text, [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans) for display/headings, and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) for badges and counters.
-
+Dark theme with a slate-950 background. Amber for anything actionable, emerald for completed. Typography-wise, I went with [DM Sans](https://fonts.google.com/specimen/DM+Sans) for body text, [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans) for headings, and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) for the badges and counters.
