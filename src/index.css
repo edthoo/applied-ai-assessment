@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Instrument Sans", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-surface-950: #0a0c10;
+  --color-surface-900: #111318;
+  --color-surface-800: #1a1d25;
+  --color-surface-700: #252830;
+
+  --color-accent-amber: #f59e0b;
+  --color-accent-amber-dim: #92400e;
+  --color-accent-emerald: #10b981;
+  --color-accent-emerald-dim: #065f46;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-surface-950);
+    color: #e2e8f0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Pending card glow */
+.card-pending {
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.15),
+    0 0 20px -5px rgba(245, 158, 11, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-pending:hover {
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3),
+    0 0 30px -5px rgba(245, 158, 11, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Completed card */
+.card-completed {
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Locked card */
+.card-locked {
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.08);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Unlock animation */
+@keyframes unlock {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.98);
+  }
+  50% {
+    transform: scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-unlock {
+  animation: unlock 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Complete pulse */
+@keyframes complete-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.015);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-complete {
+  animation: complete-pulse 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Progress bar fill */
+@keyframes fill {
+  from {
+    width: 0%;
+  }
+}
+.animate-fill {
+  animation: fill 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
